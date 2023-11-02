@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Преобразование цветовых пространств</title>
+
+    <!-- Подключение скрипта и стилей -->
+    <script src="jip.js"></script>
+    <style>
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Загрузка исходного изображения -->
+    <input type="file" id="file-input">
+    <div id="image_wrapper"></div>
+    <script>
+        const fileInput = document.querySelector('#file-input');
+        const output = document.querySelector('#image_wrapper');
+
+        fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file.type.startsWith('image/')) {
+            alert('Только изображения!');
+            return;
+        }
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+            const imagePreview = document.createElement('img', { id: 'image' });
+            imagePreview.src = reader.result;
+            imagePreview.setAttribute('id','image');
+            output.appendChild(imagePreview);
+        });
+        reader.readAsDataURL(file);
+        });
+    </script>
+
+    <button id="convert">Преобразовать</button>
+
+    <!-- Вывод результата преобразования -->
+    <div id=“result”></div>
+    <script>
+        // Функция для обработки изображения
+        function processImage() {
+            var image = document.getElementById("image");
+            var canvas = document.createElement("canvas");
+            canvas.width = image.width;
+            canvas.height = image.height;
+
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(image, 0, 0);
+
+            // Преобразование из RGB в Grayscale
+            var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var pixels = img.data;
+
+            for (var i = 0; i < pixels.length; i += 4) {
+                // Формула 1
+                var grayscale1 = 0.2126 * pixels[i] + 0.7152 * pixels[i + 1] + 0.0722 * pixels[i + 2];
+                // Формула 2
+                var grayscale2 = 0.30 * pixels[i] + 0.60 * pixels[i + 1] + 0.10 * pixels[i + 2];
+                pixels[i] = grayscale1;
+                pixels[i + 1] = grayscale1;
+                pixels[i + 2] = grayscale1; // R = G = B = grayscale value
+
+                grayscale1 -= grayscale2;
+
+                if (grayscale1 < 0) {
+                    pixels[i] -= Math.floor(grayscale1);
+                    pixels[i + 1] -= Math.floor(grayscale1);
+                    pixels[i + 2] -= Math.floor(grayscale1); // R = G = B -= abs(grayscale value)
+                } else {
+                    pixels[i] += Math.floor(grayscale1);
+                    pixels[i + 1] += Math.floor(grayscale1);
+                    pixels[i + 2] += Math.floor(grayscale1);  // R = G = B += abs(grayscale value)
+                }
+            }
+
+            ctx.putImageData(img, 0, 0); // Рисуем обработанное изображение на холсте
+
+            document.getElementById("result").innerHTML = "Изображение обработано.";
+        }
+
+        // Загрузка исходного изображения и вызов функции обработки
+        document.getElementById("image").addEventListener("load", function () {
+            console.log("Изображение загружено.");
+            processImage();
+        });
+
+        document.getElementById("convert").addEventListener("click", function () {
+            processImage(); // Вызов функции обработки при нажатии кнопки
+        });
+    </script>
+</body>
+
+</html>
