@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3 часть</title>
+</head>
+<body>
+  <input type="file" id="imageInput" accept="image/*" onchange="loadImage()">
+  <canvas id="canvas"></canvas>
+  <label for="hue">Оттенок:</label>
+  <input type="range" id="hue" min="-180" max="180" value="0" onchange="updateImage()">
+  <label for="saturation">Насыщенность:</label>
+  <input type="range" id="saturation" min="-100" max="100" value="0" onchange="updateImage()">
+  <label for="brightness">Яркость:</label>
+  <input type="range" id="brightness" min="-100" max="100" value="0" onchange="updateImage()">
+
+  <script src="3.js"></script>
+
+</body>
+</html>
